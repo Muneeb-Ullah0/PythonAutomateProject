@@ -1,10 +1,6 @@
-Name = "muneeb"
-Age = 23
-profession = "SQA Engineer"
-Hobby = "Cricket"
+#name = "Muneeb ullah"
+age = 24
+profession = "QA enigineer"
+Height = 5.99
+print (name ,age, profession, Height)#
 
-print(Name, Age, profession)
-print(Hobby)
-
-
-#this is comment
