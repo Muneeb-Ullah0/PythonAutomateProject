@@ -55,6 +55,7 @@
 name = "muneeb"
 age = 24
 address = "swabi"
+profession = "student"
 def myfunc():
-    print(name,age,address)
+    print(name,age,address,profession)
 myfunc()
