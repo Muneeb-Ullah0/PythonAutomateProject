@@ -1,16 +1,19 @@
-def validate_response(status_code):
-    if status_code == 200:
-        print("Test Passed!")
-    else:
-        print("Test Failed!")
-validate_response(200)
+#String
+name = "Muneeb"
+print(name)
+print(type(name))
 
-def response(statuscode):
-    if statuscode == 200:
-        print("Test Passed")
-response(200)
+#integer
+age = 23
+print(age)
+print(type(age))
 
-try:
-    result = 10 / 0
-except ZeroDivisionError:
-    print("Cannot divide by zero!")
+#float
+age = 23.5
+print(age)
+print(type(age))
+
+#complex
+age = 23j
+print(age)
+print(type(age))

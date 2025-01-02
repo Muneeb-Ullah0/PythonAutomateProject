@@ -52,10 +52,59 @@
 #     print(name,age,address)
 # myclass()
 
-name = "muneeb"
-age = 24
-address = "swabi"
-profession = "student"
+# name = "muneeb"
+# age = 24
+# address = "swabi"
+# profession = "student"
+# def myfunc():
+#     print(name,age,address,profession)
+# myfunc()
+
+# global variable
+# x = 50  # Global variable
+#
+# def local_scope_example():
+#     x = 20  # Local variable
+#     print("Inside function, x is:", x)
+#
+# local_scope_example()  # Output: Inside function, x is: 20
+# print("Outside function, x is:", x)  # Output: Outside function, x is: 50
+
+# noinspection PyGlobalUndefined
+# def replica():
+#     global x
+#     x = "Professional"
+#     print(x)
+# replica()
+#
+# def muneeb():
+#    name = "muneeb"
+#    age = 24
+#    address = "swabi"
+#    profession = "student"
+#    print(name,age,address,profession)
+# muneeb()
+
+# x = "awesome"
+#
+#
+# def myfunc():
+#     global x
+#
+#
+# x = "fantastic"
+# print("Python is " + x)
+#
+# myfunc()
+#
+# print("Python is " + x)
+
+x = "awesome"
+
 def myfunc():
-    print(name,age,address,profession)
+  global x
+  x = "fantastic"
+
 myfunc()
+
+print("Python is " + x)
