@@ -42,5 +42,7 @@ is_student = False
 print(is_student)
 print(type(is_student))
 
-#
-
+#range
+name = range(10)
+print(name)
+print(type(name))
