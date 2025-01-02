@@ -17,3 +17,30 @@ print(type(age))
 age = 23j
 print(age)
 print(type(age))
+
+
+#list
+name = ["Muneeb", "Ullah", "Mohammed"]
+print(name)
+print(type(name))
+
+#tuple
+name = ("Muneeb", "Ullah", "Mohammed")
+print(name)
+print(type(name))
+
+age =(23, 23.5, 23j)
+print(age)
+print(type(age))
+
+#boolean
+is_student = True
+print(is_student)
+print(type(is_student))
+
+is_student = False
+print(is_student)
+print(type(is_student))
+
+#
+
