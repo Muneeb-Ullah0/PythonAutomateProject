@@ -23,6 +23,9 @@ try:
     
     first_result.click()
     
+    # Take a screenshot and save it as screenshot.png
+    driver.save_screenshot("screenshot.png")
+    
     WebDriverWait(driver, 10).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
     )

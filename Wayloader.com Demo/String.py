@@ -1,6 +1,3 @@
-
-# A string is a sequence of characters enclosed in quotes. Strings are used to represent text in Python.
-
 # Example 1: A simple string
 example_1 = "Hello, World!"
 
@@ -22,4 +19,6 @@ example_5 = "Hello, " + "World!"
 example_6 = 'This is a string in single quotes.'
 
 print(example_1, example_2, example_3, example_4, example_5, example_6)
+
+
 
