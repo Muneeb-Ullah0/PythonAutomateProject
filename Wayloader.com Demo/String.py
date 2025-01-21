@@ -18,7 +18,20 @@ example_5 = "Hello, " + "World!"
 # Example 6: A string using single quotes
 example_6 = 'This is a string in single quotes.'
 
-print(example_1, example_2, example_3, example_4, example_5, example_6)
+# Example 7: A combination of variable, function, datatype, and string
+example_7 = 42  # A numeric datatype
+def combine_string_and_variable(input_string):
+    return f"{input_string} The variable value is {example_7}."
+
+print(example_1, example_2, example_3, example_4, example_5, example_6, combine_string_and_variable("Result:"))
+
+def myname():
+    name = "Muneeb Khan"
+    print(name)
+myname()
+
+
+
 
 
 

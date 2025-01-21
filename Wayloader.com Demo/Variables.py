@@ -108,3 +108,22 @@ def myfunc():
 myfunc()
 
 print("Python is " + x)
+
+
+name ="muneeb"
+age = 24
+profession = "qa engineer"
+address = "thesauri town"
+def myfunc():
+
+ print(name,age,profession,address,sep="///**")
+
+myfunc()
+def student():
+a = 20
+b = 40
+result = c = (a/b ,a+b, a-b, a*b, a%b)
+
+print(c)
+student()
+
