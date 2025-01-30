@@ -130,4 +130,6 @@ def student():
     b = 40
     c = (a / b, a + b, a - b, a * b, a % b)
     print(c)
+
 student()
+

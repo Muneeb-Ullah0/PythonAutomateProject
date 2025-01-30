@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 driver = webdriver.Chrome()
 
@@ -18,7 +19,7 @@ password_field.send_keys("test_password")
 login_button = wait.until(EC.element_to_be_clickable((By.ID, "login-button")))
 login_button.click()
 
-import time
 time.sleep(5)
 
 driver.quit()
+
