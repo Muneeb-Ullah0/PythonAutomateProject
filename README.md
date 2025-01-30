@@ -1,1 +1,2 @@
-This is my first SQA Automation 
+This is my first SQA Automation practice file
+
