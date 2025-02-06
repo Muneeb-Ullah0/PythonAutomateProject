@@ -1,27 +1,28 @@
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.add_argument("--headless")  # Run in headless mode (no UI)
+options.add_argument("--disable-gpu")
+options.add_argument("--window-size=1920x1080")
+
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service, options=options)
 
 # URL to scrape
-url = "https://example.com"  # Replace with the target website
+url = "https://www.irishwheel.ie/user/create-ad"
+driver.get(url)
 
-# Send a GET request
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
-response = requests.get(url, headers=headers)
+# Get the page source after JavaScript loads
+html_content = driver.page_source
 
-# Check if request was successful
-if response.status_code == 200:
-    soup = BeautifulSoup(response.text, "html.parser")
+# Save the HTML content
+with open("scraped_page.html", "w", encoding="utf-8") as file:
+    file.write(html_content)
 
-    # Example: Extract all <h1> tags
-    headings = soup.find_all("h1")
-    for h in headings:
-        print(h.text.strip())
+# Close the driver
+driver.quit()
 
-    # Example: Extract all links
-    links = soup.find_all("a", href=True)
-    for link in links:
-        print(link["href"])
-else:
-    print(f"Failed to fetch page, status code: {response.status_code}")
+print("HTML data successfully scraped and saved as 'scraped_page.html'.")
