@@ -146,7 +146,7 @@ Name = ("Muneeb")
 Age = 23
 
 def student ():
-     print (str(Name), int(Age))
+    print(str(Name), int(Age))
 student()
 
 

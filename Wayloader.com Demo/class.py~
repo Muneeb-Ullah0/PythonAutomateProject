@@ -4,14 +4,17 @@ from selenium.webdriver.common.keys import Keys
 import time
 
 driver = webdriver.Chrome()
+
+# Open the registration page
 driver.get("https://demoqa.com/register")
 
-time.sleep(3)
+# Wait for the page to load
+#time.sleep(3)
 
 # Fill in the registration details
-driver.find_element(By.ID, "firstname").send_keys("Muneeb")
-driver.find_element(By.ID, "lastname").send_keys("Khan")
-driver.find_element(By.ID, "userName").send_keys("Muneebkhan922")
+driver.find_element(By.ID, "firstname").send_keys("John")
+driver.find_element(By.ID, "lastname").send_keys("Doe")
+driver.find_element(By.ID, "userName").send_keys("JohnDoe123")
 driver.find_element(By.ID, "password").send_keys("StrongPassword@123")
 
 # CAPTCHA Handling (Manual Step)
@@ -25,6 +28,8 @@ print("Registration button clicked successfully!")
 # Wait for the response
 time.sleep(3)
 
+# Print Success Message
 print("Registration submitted successfully!")
 
+# Close the browser
 driver.quit()
