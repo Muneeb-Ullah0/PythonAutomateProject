@@ -25,5 +25,4 @@ def main():
             print(f"❌ '{email}' is NOT a valid email address. Please try again.")
 
 
-if __name__ == "__main__":
     main()
