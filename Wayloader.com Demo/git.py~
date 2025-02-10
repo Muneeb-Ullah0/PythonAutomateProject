@@ -10,4 +10,7 @@ def Student ():
     else:
         print("❌ No")
 
+        for  i in student_result:
+            print(i)
+
 Student()
