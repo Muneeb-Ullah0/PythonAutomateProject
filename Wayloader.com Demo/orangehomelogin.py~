@@ -11,7 +11,7 @@ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
 driver.maximize_window()
 
-wait = WebDriverWait(driver, 15)
+wait = WebDriverWait(driver, 10)
 
 username = wait.until(EC.presence_of_element_located((By.NAME, "username")))
 password = wait.until(EC.presence_of_element_located((By.NAME, "password")))
@@ -26,7 +26,6 @@ dashboard_text = wait.until(EC.presence_of_element_located((By.XPATH, "//h6[text
 
 if dashboard_text:
     print("✅ Login successful! Navigated to Dashboard.")
-    
 else:
     print("❌ Login failed.")
 

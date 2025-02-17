@@ -1,7 +1,10 @@
-a = 22
-b = 33
+from selenium import webdriver
 
-if b > a:
-    print("b is greater than a")
-else:
-    print("b is not greater than a")
+driver = webdriver.Chrome()
+
+driver.get ("https://www.google.com")
+
+
+print(driver.title)
+
+driver.quit()
