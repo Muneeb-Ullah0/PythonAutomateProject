@@ -8,7 +8,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 username = "womowi9591@acroins.com"
 password = "Test@123"
 login_url = "https://12372.wayloader.com/"
-
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
 

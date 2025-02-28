@@ -1,6 +1,4 @@
-name = "muneeb"
-age = 34
-if name == "muneeb khan":
-     print("Name is muneeb")
-else:
-    print("name is not muneeb")
+name = ("Muneeb", "Ullah", "Mohammed" , "ali")
+y = list(name)
+y[1] = "khan"
+print(y)
