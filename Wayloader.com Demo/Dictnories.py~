@@ -8,5 +8,4 @@ student["name"] = "Bob"
 del student["age"]
 print(student)
 
-student = student.pop("grades")
-print(student)
+student
