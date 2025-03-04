@@ -1,13 +1,5 @@
-thislist = ["apple", "banana", "cherry"]
-thislist.append("orange")
-print(thislist)
+x = 58329748923843927
+x.bit_length()
+print(x.bit_length())
 
-
-thislist = ["apple", "banana", "cherry"]
-thislist[1] = "blackcurrant"
-print(thislist)
-
-thislist = ["apple", "banana", "cherry"]
-thislist.remove("banana")
-print(thislist)
-
+x.__sizeof__()

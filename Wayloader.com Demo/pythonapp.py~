@@ -1,0 +1,219 @@
+from flask import Flask, render_template_string, request, redirect, flash
+import smtplib
+import random
+from email.mime.text import MIMEText
+
+app = Flask(__name__)
+app.secret_key = "your_secret_key"
+
+users = {}
+
+
+def send_otp(email):
+    smtp_server = "sandbox.smtp.mailtrap.io"
+    smtp_port = 2525
+    smtp_username = "smtp@mailtrap.io"
+    smtp_password = "74c91d4000661be8b1b4f4dfe65f998f"
+
+    sender_email = "noreply@example.com"
+    receiver_email = email
+    otp = random.randint(100000, 999999)
+    users[email] = otp
+
+    msg = MIMEText(f"Your OTP is: {otp}")
+    msg["Subject"] = "Your OTP Code"
+    msg["From"] = sender_email
+    msg["To"] = receiver_email
+
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.sendmail(sender_email, receiver_email, msg.as_string())
+        return True
+    except Exception as e:
+        print("Error:", e)
+        return False
+
+
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern OTP Registration</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1556761175-4b46a572b786') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            height: 80vh;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .form-container {
+            width: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 1.5s ease-in-out;
+            backdrop-filter: blur(10px);
+        }
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+        }
+        #map {
+            width: 50%;
+            height: 100%;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .message {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            .form-container, #map {
+                width: 100%;
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Register with OTP</h2>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                    <p class="message">{{ message }}</p>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <input type="email" name="email" placeholder="Enter Email" required>
+                <input type="password" name="password" placeholder="Enter Password" required>
+                <input type="text" id="location" placeholder="Enter Location" required>
+                <button type="submit">Send OTP</button>
+            </form>
+
+            {% if otp_sent %}
+            <form method="POST" action="/verify">
+                <input type="hidden" name="email" value="{{ email }}">
+                <input type="text" name="otp" placeholder="Enter OTP" required>
+                <button type="submit">Verify OTP</button>
+            </form>
+            {% endif %}
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([33.6844, 73.0479], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        var marker = L.marker([33.6844, 73.0479]).addTo(map);
+
+        function initAutocomplete() {
+            var input = document.getElementById('location');
+            var autocomplete = new google.maps.places.Autocomplete(input);
+
+            autocomplete.addListener('place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    return;
+                }
+                var lat = place.geometry.location.lat();
+                var lng = place.geometry.location.lng();
+                map.setView([lat, lng], 12);
+                marker.setLatLng([lat, lng]);
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initAutocomplete);
+    </script>
+</body>
+</html>
+"""
+
+
+@app.route("/", methods=["GET", "POST"])
+def register():
+    otp_sent = False
+    email = ""
+
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+
+        if send_otp(email):
+            flash("OTP sent! Check your email.")
+            otp_sent = True
+        else:
+            flash("Error: Could not send OTP. Check your email settings.")
+
+    return render_template_string(HTML_TEMPLATE, otp_sent=otp_sent, email=email)
+
+
+@app.route("/verify", methods=["POST"])
+def verify_otp():
+    email = request.form["email"]
+    entered_otp = request.form["otp"]
+
+    if email in users and users[email] == int(entered_otp):
+        flash("✅ OTP Verified Successfully!")
+        return redirect("/")
+    else:
+        flash("❌ Invalid OTP! Please try again.")
+        return redirect("/")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
