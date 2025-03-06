@@ -1,51 +1,50 @@
-from flask import Flask, render_template_string, request, redirect, flash
-import smtplib
-import random
-from email.mime.text import MIMEText
+from flask import Flask, render_template_string, request, redirect, flash, session
+import sqlite3
+
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-users = {}
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5432/your_database_name'
+db = SQLAlchemy(app)
+# Database creation
+def create_database():
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
 
-
-def send_otp(email):
-    smtp_server = "sandbox.smtp.mailtrap.io"
-    smtp_port = 2525
-    smtp_username = "smtp@mailtrap.io"
-    smtp_password = "74c91d4000661be8b1b4f4dfe65f998f"
-
-    sender_email = "noreply@example.com"
-    receiver_email = email
-    otp = random.randint(100000, 999999)
-    users[email] = otp
-
-    msg = MIMEText(f"Your OTP is: {otp}")
-    msg["Subject"] = "Your OTP Code"
-    msg["From"] = sender_email
-    msg["To"] = receiver_email
-
+# Add user to the database
+def add_user(username, email, password):
     try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_username, smtp_password)
-            server.sendmail(sender_email, receiver_email, msg.as_string())
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", (username, email, password))
+        conn.commit()
+        conn.close()
         return True
-    except Exception as e:
-        print("Error:", e)
+    except sqlite3.IntegrityError:
         return False
 
-
+# HTML template
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern OTP Registration</title>
+    <title>Modern Registration</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"></script>
     <style>
         body {
             margin: 0;
@@ -56,7 +55,6 @@ HTML_TEMPLATE = """
             align-items: center;
             justify-content: center;
         }
-
         .container {
             display: flex;
             width: 90%;
@@ -112,7 +110,6 @@ HTML_TEMPLATE = """
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -128,7 +125,7 @@ HTML_TEMPLATE = """
 <body>
     <div class="container">
         <div class="form-container">
-            <h2>Register with OTP</h2>
+            <h2>Register</h2>
             {% with messages = get_flashed_messages() %}
               {% if messages %}
                 {% for message in messages %}
@@ -136,96 +133,94 @@ HTML_TEMPLATE = """
                 {% endfor %}
               {% endif %}
             {% endwith %}
-
             <form method="POST">
+                <input type="text" name="username" placeholder="Enter Username" required>
                 <input type="email" name="email" placeholder="Enter Email" required>
                 <input type="password" name="password" placeholder="Enter Password" required>
-                <input type="text" id="location" placeholder="Enter Location" required>
-                <button type="submit">Send OTP</button>
+                <button type="submit">Register</button>
             </form>
-
-            {% if otp_sent %}
-            <form method="POST" action="/verify">
-                <input type="hidden" name="email" value="{{ email }}">
-                <input type="text" name="otp" placeholder="Enter OTP" required>
-                <button type="submit">Verify OTP</button>
-            </form>
-            {% endif %}
         </div>
         <div id="map"></div>
     </div>
-
     <script>
     var map = L.map('map').setView([33.6844, 73.0479], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    
     var marker = L.marker([33.6844, 73.0479]).addTo(map);
-
-    function initAutocomplete() {
-        var input = document.getElementById('location');
-        var autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
-
-        // Prevent input from getting disabled
-        input.addEventListener("keydown", function(event) {
-            event.stopPropagation();  // Prevents Google from interfering
-        });
-
-        // When user selects a location
-        autocomplete.addListener('place_changed', function() {
-            var place = autocomplete.getPlace();
-            if (!place.geometry) {
-                return;
-            }
-            var lat = place.geometry.location.lat();
-            var lng = place.geometry.location.lng();
-            
-            // Update map and marker
-            map.setView([lat, lng], 12);
-            marker.setLatLng([lat, lng]);
-
-            // Allow manual input after selection
-            input.removeAttribute("readonly");
-        });
-    }
-
-    google.maps.event.addDomListener(window, 'load', initAutocomplete);
-</script>
-
+    </script>
 </body>
 </html>
 """
 
+# Dashboard Page
+DASHBOARD_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: #f4f4f4;
+            padding: 50px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #333;
+        }
+        .logout {
+            padding: 10px 20px;
+            background: red;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ username }}</h1>
+        <p>You have successfully registered!</p>
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+</body>
+</html>
+"""
 
 @app.route("/", methods=["GET", "POST"])
 def register():
-    otp_sent = False
-    email = ""
-
     if request.method == "POST":
+        username = request.form["username"]
         email = request.form["email"]
         password = request.form["password"]
 
-        if send_otp(email):
-            flash("OTP sent! Check your email.")
-            otp_sent = True
+        if add_user(username, email, password):
+            session["username"] = username
+            return redirect("/dashboard")
         else:
-            flash("Error: Could not send OTP. Check your email settings.")
+            flash("❌ Email already registered!")
 
-    return render_template_string(HTML_TEMPLATE, otp_sent=otp_sent, email=email)
+    return render_template_string(HTML_TEMPLATE)
 
-
-@app.route("/verify", methods=["POST"])
-def verify_otp():
-    email = request.form["email"]
-    entered_otp = request.form["otp"]
-
-    if email in users and users[email] == int(entered_otp):
-        flash("✅ OTP Verified Successfully!")
+@app.route("/dashboard")
+def dashboard():
+    if "username" not in session:
         return redirect("/")
-    else:
-        flash("❌ Invalid OTP! Please try again.")
-        return redirect("/")
+    return render_template_string(DASHBOARD_TEMPLATE, username=session["username"])
 
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    return redirect("/")
 
 if __name__ == "__main__":
+    create_database()
     app.run(debug=True)
