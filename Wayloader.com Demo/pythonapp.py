@@ -22,6 +22,7 @@ def create_database():
     """)
     conn.commit()
     conn.close()
+create_database()
 
 # Add user to the database
 def add_user(username, email, password):
@@ -224,3 +225,4 @@ def logout():
 if __name__ == "__main__":
     create_database()
     app.run(debug=True)
+
