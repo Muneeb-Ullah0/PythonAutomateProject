@@ -15,3 +15,4 @@ car2 = Car("Honda", "Civic", 2022, "gulberg green")
 # Calling the method
 car1.display_info()
 car2.display_info()
+
