@@ -19,12 +19,12 @@ try:
     first_result = WebDriverWait(driver, 10).until(
         ec.element_to_be_clickable((By.CSS_SELECTOR, "h3"))
     )
-    
+
     first_result.click()
-    
+
     # Take a screenshot and save it as screenshot.png
     driver.save_screenshot("screenshot.png")
-    
+
     WebDriverWait(driver, 10).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
@@ -32,3 +32,4 @@ except Exception as e:
     print("Error:", e)
 finally:
     driver.quit()
+

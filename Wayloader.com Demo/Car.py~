@@ -6,7 +6,7 @@ class Car:
         self.Address = Address
 
     def display_info(self):
-        print(f"{self.year} {self.brand} {self.model}" f" {self.Address}")
+        print(f"{self.year} {self.brand} {self.model}")
 
 # Creating objects (instances) of the class
 car1 = Car("Toyota", "Corolla", 2023 , "swabi")

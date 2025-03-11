@@ -1,0 +1,8 @@
+from car import Car
+
+car1 = Car("Toyota", "Corolla", 2023)
+car2 = Car("Honda", "Civic", 2022)
+
+# Printing car details
+print(car1.display_info())  # Output: 2023 Toyota Corolla
+print(car2.display_info())  # Output: 2022 Honda Civic
