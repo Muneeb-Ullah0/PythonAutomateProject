@@ -1,0 +1,13 @@
+def mystudent ():
+    name = "Muneeb"
+    age = 23
+    if name == "ali":
+        print("My name is : " + name)
+    else:
+        print("My name is Not : "  + name)
+
+    if age > 23:
+        print("My age is : " + str(age))
+    else:
+        print("My age is Not : " + str(age))
+mystudent()
