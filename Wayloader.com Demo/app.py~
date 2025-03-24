@@ -1,0 +1,75 @@
+from flask import Flask, request, send_file, render_template
+import os
+from werkzeug.utils import secure_filename
+import mammoth  # For Word (docx) to HTML conversion
+from fpdf import FPDF  # For saving edited PDF content
+
+try:
+    from pdfminer.high_level import extract_text
+
+    pdfminer_available = True
+except ImportError:
+    pdfminer_available = False
+
+app = Flask(__name__)
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+@app.route('/')
+def home():
+    return render_template("index.html")
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return "No file part"
+    file = request.files['file']
+    if file.filename == '':
+        return "No selected file"
+    filename = secure_filename(file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+
+    file_extension = filename.rsplit('.', 1)[1].lower()
+    if file_extension == "docx":
+        with open(filepath, "rb") as docx_file:
+            result = mammoth.convert_to_html(docx_file)
+            content = result.value
+    elif file_extension == "pdf":
+        if pdfminer_available:
+            content = extract_text(filepath)
+        else:
+            return "PDF processing is not available. Please install pdfminer.six."
+    else:
+        return "Unsupported file format"
+
+    return render_template("editor.html", content=content, filename=filename)
+
+
+@app.route('/save', methods=['POST'])
+def save_file():
+    content = request.form['content']
+    filename = request.form['filename']
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    file_extension = filename.rsplit('.', 1)[1].lower()
+    if file_extension == "docx":
+        with open(filepath, "w", encoding="utf-8") as file:
+            file.write(content)
+    elif file_extension == "pdf":
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, content)
+        pdf.output(filepath)
+    else:
+        return "Unsupported format"
+
+    return send_file(filepath, as_attachment=True)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
