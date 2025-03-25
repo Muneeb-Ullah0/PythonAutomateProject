@@ -13,12 +13,16 @@ search_box = driver.find_element(By.NAME, "q")
 search_box.send_keys("Selenium Python")
 search_box.send_keys(Keys.RETURN)
 
+# Wait for results to load
 time.sleep(2)
 
+# Click on the first search result
 first_result = driver.find_element(By.CSS_SELECTOR, "h3")
 first_result.click()
 
+# Wait and print page title
 time.sleep(3)
 print("Page Title:", driver.title)
 
+# Close browser
 driver.quit()
