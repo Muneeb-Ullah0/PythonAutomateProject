@@ -1,0 +1,31 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+driver = webdriver.Chrome()
+wait = WebDriverWait(driver, 5) 
+driver.get("https://www.travelustaad.com/")
+driver.maximize_window()
+
+menu_links = [
+    "Flight",
+    "Groups",
+    "Umrah",
+    "Buses",
+    "Hotels",
+    "Holidays",
+    "Visas"
+]
+
+for link_text in menu_links:
+    try:
+        link = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, link_text)))
+        driver.execute_script("arguments[0].click();", link)
+        print(f"Opened: {link_text}")
+        wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
+    except Exception as e:
+        print(f"Failed to open {link_text}: {e}")
+        continue
+
+driver.quit()
